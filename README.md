@@ -18,10 +18,7 @@ Available in **English & বাংলা**.
 
 ---
 
-
 | Setup | Peek | Discuss | Result |
-|:-:|:-:|:-:|:-:|
-| _soon_ | _soon_ | _soon_ | _soon_ |
 
 ---
 
@@ -129,11 +126,7 @@ That's it. Truly.
 
 ## 🗺️ Roadmap
 
-- [ ] Sound effects (success chime, pass sound)
 - [ ] Custom word packs (users can add their own categories)
-- [ ] Round history / score tracking
-- [ ] Hindi and Spanish translations
-- [ ] Optional timer mode for the discussion phase
 
 ---
 
@@ -152,7 +145,7 @@ For large changes, open an issue first so we can discuss it.
 
 ## 📄 License
 
-Released under the **MIT License** — free to use, modify, and distribute. See [`LICENSE`](LICENSE) for details.
+Released under the **MIT License** — free to use, modify, and distribute.
 
 ---
 

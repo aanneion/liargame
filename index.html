@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>🎭 LIAR — Who is the Liar?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5EFE2;
+    --ink:#0D0D0D;
+    --lime:#C8FF4D;
+    --pink:#FF5BA7;
+    --blue:#4D6EFF;
+    --yellow:#FFD93D;
+    --orange:#FF8A3D;
+    --purple:#B18AFF;
+    --mint:#7DFFC4;
+    --paper:#FFFDF7;
+    --bd:2.5px solid var(--ink);
+    --sh:5px 5px 0 var(--ink);
+    --sh-sm:3px 3px 0 var(--ink);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:'Hind Siliguri','Space Grotesk',system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 20% 0%, #FFE9D6 0%, transparent 45%),
+      radial-gradient(circle at 100% 100%, #D6E3FF 0%, transparent 45%),
+      var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    padding:0;
+    min-height:100dvh;
+    overflow:hidden;
+    position:relative;
+  }
+  body::after{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .12 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ================= SPLASH ================= */
+  .splash{
+    position:fixed;inset:0;z-index:1000;
+    background:
+      radial-gradient(circle at 20% 0%, #FFE9D6 0%, transparent 45%),
+      radial-gradient(circle at 100% 100%, #D6E3FF 0%, transparent 45%),
+      var(--bg);
+    display:grid;place-items:center;
+    transition:opacity .35s ease, visibility .35s ease;
+  }
+  .splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+  .splash-card{
+    background:var(--paper);
+    border:var(--bd);
+    border-radius:26px;
+    padding:32px 44px 30px;
+    box-shadow:var(--sh);
+    text-align:center;
+    animation:pop .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .splash-logo{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:2.5px;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:9px;
+    justify-content:center;
+  }
+  .splash-logo .em{
+    font-size:32px;
+    animation:bob 2.4s ease-in-out infinite;
+    filter:drop-shadow(0 4px 12px rgba(255,91,167,.5));
+  }
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}
+  .splash-dots{
+    display:flex;gap:7px;justify-content:center;margin-top:18px;
+  }
+  .splash-dots span{
+    width:9px;height:9px;
+    background:var(--ink);
+    border-radius:50%;
+    animation:dotBounce 1.15s infinite ease-in-out;
+  }
+  .splash-dots span:nth-child(2){animation-delay:.15s;}
+  .splash-dots span:nth-child(3){animation-delay:.30s;}
+  @keyframes dotBounce{
+    0%,80%,100%{transform:scale(.55);opacity:.35;}
+    40%{transform:scale(1);opacity:1;}
+  }
+
+  .shell{
+    position:relative;z-index:1;
+    width:100%;max-width:440px;
+    height:100dvh;max-height:900px;
+    background:var(--paper);
+    border:var(--bd);border-radius:0;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    box-shadow:8px 8px 0 rgba(13,13,13,.18);
+  }
+  @media (min-width:520px) and (min-height:760px){
+    .shell{border-radius:34px;height:calc(100dvh - 40px);max-height:860px;}
+  }
+
+  .statusbar{
+    flex:0 0 auto;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:11px 22px 6px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.3px;
+    background:var(--paper);
+    min-height:38px;
+  }
+  .credit-link{
+    display:inline-flex;align-items:center;gap:4px;
+    font-family:'Hind Siliguri',sans-serif;
+    font-size:11px;font-weight:500;letter-spacing:.1px;
+    color:var(--ink);text-decoration:none;
+    padding:5px 8px;margin:-5px -8px;border-radius:8px;
+    transition:background .15s;white-space:nowrap;line-height:1;
+  }
+  .credit-link:active{background:rgba(13,13,13,.08);}
+  .credit-link strong{font-weight:700;}
+  .credit-link .heart{
+    color:#FF3B6B;display:inline-block;font-size:11.5px;line-height:1;
+    transform:translateY(-.5px);
+  }
+  .statusbar .right{display:flex;gap:6px;align-items:center;}
+  .statusbar .icons{display:flex;gap:5px;align-items:center;}
+  .statusbar svg{display:block;}
+
+  .header{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:4px 16px 12px;
+    background:var(--paper);
+    border-bottom:var(--bd);
+    position:relative;z-index:3;
+  }
+  .iconbtn{
+    width:38px;height:38px;border-radius:12px;
+    border:var(--bd);background:var(--paper);
+    display:grid;place-items:center;cursor:pointer;
+    box-shadow:var(--sh-sm);
+    transition:transform .12s, box-shadow .12s;
+    color:var(--ink);
+  }
+  .iconbtn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink);}
+  .iconbtn.hidden{visibility:hidden;}
+
+  .langbtn{
+    min-width:44px;height:38px;padding:0 12px;
+    border-radius:12px;
+    border:var(--bd);background:var(--yellow);
+    display:grid;place-items:center;cursor:pointer;
+    box-shadow:var(--sh-sm);
+    transition:transform .12s, box-shadow .12s, background .15s;
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:1px;
+    line-height:1;
+  }
+  .langbtn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink);}
+  .langbtn .globe{font-size:14px;margin-right:3px;}
+
+  .logo{
+    display:flex;align-items:center;gap:7px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:15px;letter-spacing:1.5px;
+    padding:7px 14px;border-radius:999px;
+    background:var(--ink);color:var(--paper);
+    border:var(--bd);
+  }
+  .logo .em{font-size:15px;}
+
+  .body{
+    flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+    position:relative;background:var(--paper);
+    -webkit-overflow-scrolling:touch;
+    min-height:0;
+  }
+  .body::-webkit-scrollbar{width:0;}
+
+  .screen{
+    display:none;
+    padding:18px 18px 24px;
+    min-height:100%;
+    position:relative;
+  }
+  .screen.active{display:block;animation:slideIn .32s cubic-bezier(.22,1,.36,1);}
+  @keyframes slideIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+
+  .eyebrow{
+    display:inline-block;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;
+    padding:5px 10px;border-radius:999px;
+    background:var(--lime);border:var(--bd);
+    margin-bottom:10px;
+  }
+  .eyebrow.pink{background:var(--pink);color:#fff;}
+
+  h1.title{
+    font-size:26px;font-weight:700;margin:0 0 6px;line-height:1.2;
+    letter-spacing:-.3px;
+  }
+  h2.section{
+    font-size:17px;font-weight:700;margin:0 0 12px;letter-spacing:-.2px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2.section::before{
+    content:'';display:inline-block;width:6px;height:18px;
+    background:var(--ink);border-radius:3px;
+  }
+  .lede{font-size:14px;color:#555;margin:0 0 22px;line-height:1.55;font-weight:500;}
+
+  .count-card{
+    border:var(--bd);border-radius:20px;background:var(--lime);
+    padding:16px 18px;box-shadow:var(--sh);
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .count-card .label{
+    font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    font-family:'Space Grotesk',sans-serif;opacity:.7;
+  }
+  .count-card .num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:38px;font-weight:700;line-height:1;margin-top:2px;
+    font-variant-numeric:tabular-nums;
+  }
+  .count-card .num .unit{font-size:18px;opacity:.5;font-family:'Hind Siliguri';font-weight:500;}
+  .stepper{display:flex;gap:8px;}
+  .stepbtn{
+    width:46px;height:46px;border-radius:14px;
+    border:var(--bd);background:var(--paper);color:var(--ink);
+    font-size:24px;font-weight:700;line-height:1;cursor:pointer;
+    display:grid;place-items:center;
+    box-shadow:var(--sh-sm);
+    transition:transform .12s, box-shadow .12s;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .stepbtn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink);}
+
+  .cat-grid-wrap{position:relative;margin-bottom:14px;}
+  .cat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    max-height:44vh;
+    overflow-y:auto;
+    padding:3px 6px 6px 3px;
+    margin:-3px -6px -6px -3px;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+    scrollbar-color:var(--ink) transparent;
+  }
+  .cat-grid::-webkit-scrollbar{width:6px;}
+  .cat-grid::-webkit-scrollbar-thumb{background:var(--ink);border-radius:3px;}
+  .cat-grid::-webkit-scrollbar-track{background:rgba(13,13,13,.06);border-radius:3px;}
+
+  .cat-card{
+    position:relative;
+    border:var(--bd);border-radius:16px;
+    padding:12px 11px;
+    background:var(--paper);
+    cursor:pointer;user-select:none;
+    box-shadow:var(--sh-sm);
+    transition:transform .12s, box-shadow .12s, background .15s;
+    display:flex;align-items:center;gap:9px;
+    overflow:hidden;
+    min-height:56px;
+  }
+  .cat-card:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink);}
+  .cat-card.on{background:var(--yellow);box-shadow:var(--sh);}
+  .cat-card.on::after{
+    content:'✓';
+    position:absolute;top:-1px;right:-1px;
+    width:22px;height:22px;
+    background:var(--ink);color:var(--paper);
+    border-radius:0 15px 0 12px;
+    display:grid;place-items:center;
+    font-size:12px;font-weight:700;
+  }
+  .cat-card .ico{font-size:22px;line-height:1;flex:0 0 auto;}
+  .cat-card .nm{
+    font-size:13px;font-weight:600;line-height:1.2;
+    overflow:hidden;text-overflow:ellipsis;
+  }
+
+  .btn{
+    width:100%;
+    border:var(--bd);border-radius:18px;
+    padding:16px 18px;
+    font-family:inherit;font-size:16px;font-weight:700;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    transition:transform .12s, box-shadow .12s;
+    box-shadow:var(--sh);
+    letter-spacing:.2px;
+    color:var(--ink);
+  }
+  .btn:active:not(:disabled){
+    transform:translate(5px,5px);
+    box-shadow:0 0 0 var(--ink);
+  }
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-primary{background:var(--ink);color:var(--paper);}
+  .btn-pink{background:var(--pink);color:#fff;}
+
+  .cta-dock{
+    position:sticky;
+    bottom:0;
+    z-index:5;
+    margin:14px -18px 0;
+    padding:16px 18px 12px;
+    background:linear-gradient(to bottom, rgba(255,253,247,0) 0%, var(--paper) 32%, var(--paper) 100%);
+    pointer-events:none;
+  }
+  .cta-dock .btn{pointer-events:auto;}
+
+  .reveal-top{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:14px;gap:8px;
+  }
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+    padding:6px 12px;border-radius:999px;
+    background:var(--paper);border:var(--bd);
+  }
+  .chip.dark{background:var(--ink);color:var(--paper);}
+
+  .player-badge{
+    border:var(--bd);border-radius:22px;
+    background:var(--paper);
+    padding:16px 18px;
+    box-shadow:var(--sh);
+    margin-bottom:16px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .avatar{
+    width:52px;height:52px;flex:0 0 52px;border-radius:16px;
+    border:var(--bd);
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    display:grid;place-items:center;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;
+    color:#fff;
+    box-shadow:var(--sh-sm);
+  }
+  .player-badge .who{flex:1;min-width:0;}
+  .player-badge .lab{
+    font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    color:#888;font-family:'Space Grotesk',sans-serif;
+  }
+  .player-badge .name{
+    font-size:22px;font-weight:700;line-height:1.15;margin-top:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+
+  .progress-row{
+    display:flex;flex-wrap:wrap;gap:6px;
+    margin-bottom:18px;
+    padding:10px 12px;
+    border:var(--bd);border-radius:14px;
+    background:var(--bg);
+    box-shadow:var(--sh-sm);
+  }
+  .pdot{
+    width:22px;height:22px;border-radius:8px;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    display:grid;place-items:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;font-weight:700;
+    transition:.25s;
+  }
+  .pdot.done{background:var(--lime);}
+  .pdot.done::after{content:'✓';font-size:12px;}
+  .pdot.current{
+    background:var(--yellow);
+    transform:scale(1.1);
+    box-shadow:0 0 0 2px var(--ink);
+  }
+
+  .hold{
+    position:relative;
+    width:100%;height:240px;
+    border:var(--bd);border-radius:24px;
+    background:linear-gradient(160deg, #FFE4F1 0%, #E5E2FF 100%);
+    overflow:hidden;
+    cursor:pointer;user-select:none;-webkit-user-select:none;
+    touch-action:none;
+    box-shadow:var(--sh);
+    display:grid;place-items:center;
+    transition:transform .1s, box-shadow .1s, background .2s;
+    margin-bottom:14px;
+  }
+  .hold.active{
+    transform:translate(5px,5px);
+    box-shadow:0 0 0 var(--ink);
+  }
+  .hold.locked{pointer-events:none;opacity:.4;}
+  .hold.done{background:linear-gradient(160deg, #D9FFE8 0%, #C8FF4D 100%);}
+
+  .hold-idle{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:16px;text-align:center;
+    transition:opacity .18s;
+    pointer-events:none;
+  }
+  .hold-idle.hide{opacity:0;}
+  .hold-idle .big-ico{
+    width:60px;height:60px;
+    display:grid;place-items:center;
+    animation:tapDown 1.8s ease-in-out infinite;
+  }
+  @keyframes tapDown{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(6px) scale(.94)}}
+  .hold-idle .t1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:15px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  }
+  .hold-idle .t2{font-size:13px;font-weight:500;color:#555;max-width:240px;line-height:1.45;}
+
+  .hold-peek{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;padding:22px;
+    opacity:0;pointer-events:none;transition:opacity .18s;
+    text-align:center;
+  }
+  .hold-peek.show{opacity:1;}
+  .hold-peek .k{font-size:40px;line-height:1;}
+  .hold-peek .lab{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10.5px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;
+    color:#555;
+  }
+  .hold-peek .word{
+    font-size:32px;font-weight:700;line-height:1.15;
+    color:var(--ink);
+    padding:6px 14px;
+    background:var(--paper);
+    border:var(--bd);border-radius:12px;
+    box-shadow:var(--sh-sm);
+    max-width:100%;
+    word-break:break-word;
+  }
+  .hold-peek .liar{
+    font-size:30px;font-weight:700;line-height:1.15;
+    color:#fff;
+    padding:8px 18px;
+    background:var(--pink);
+    border:var(--bd);border-radius:14px;
+    box-shadow:var(--sh-sm);
+    transform:rotate(-2deg);
+  }
+  .hold-peek .note{
+    font-size:12.5px;color:#333;max-width:260px;line-height:1.5;
+    margin-top:4px;font-weight:500;
+  }
+
+  .fp{
+    position:absolute;
+    width:120px;height:120px;
+    pointer-events:none;
+    opacity:0;transform:scale(.6);
+    transition:opacity .18s, transform .3s cubic-bezier(.34,1.56,.64,1);
+    z-index:4;
+    display:grid;place-items:center;
+  }
+  .fp.show{opacity:1;transform:scale(1);}
+  .fp svg.ring{position:absolute;inset:0;transform:rotate(-90deg);}
+  .fp svg.ring circle{fill:none;stroke-width:5;stroke-linecap:round;}
+  .fp .bg{stroke:rgba(13,13,13,.15);}
+  .fp .fg{
+    stroke:var(--ink);
+    stroke-dasharray:308;
+    stroke-dashoffset:308;
+    transition:stroke .2s;
+  }
+  .fp.done .fg{stroke:#0D0D0D;}
+  .fp .mark{
+    width:56px;height:56px;color:var(--ink);
+    animation:pulse 1.3s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.08);opacity:1}}
+  .fp.done .mark{animation:none;transform:scale(1.12);}
+  .fp .bg-circle{
+    position:absolute;inset:-8px;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,91,167,.35), transparent 68%);
+    opacity:0;transition:opacity .3s;
+  }
+  .fp.show .bg-circle{opacity:1;}
+  .fp.done .bg-circle{background:radial-gradient(circle, rgba(125,255,196,.6), transparent 68%);}
+
+  .pass{
+    position:absolute;inset:0;z-index:6;
+    background:var(--ink);color:var(--paper);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    opacity:0;pointer-events:none;transition:opacity .25s;
+    border-radius:22px;text-align:center;padding:20px;
+  }
+  .pass.show{opacity:1;}
+  .pass .check{
+    width:66px;height:66px;border-radius:50%;
+    background:var(--lime);border:var(--bd);
+    display:grid;place-items:center;
+    font-size:32px;color:var(--ink);font-weight:700;
+    box-shadow:var(--sh-sm);
+    animation:pop .45s cubic-bezier(.34,1.56,.64,1);
+    margin-bottom:6px;
+  }
+  @keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  .pass .m{font-size:17px;font-weight:700;letter-spacing:.3px;}
+  .pass .s{font-size:13px;color:#aaa;font-weight:500;}
+
+  .discuss-hero{
+    border:var(--bd);border-radius:22px;
+    background:var(--blue);color:#fff;
+    padding:22px;text-align:center;
+    box-shadow:var(--sh);
+    margin-bottom:20px;
+  }
+  .discuss-hero .emo{font-size:52px;line-height:1;margin-bottom:6px;}
+  .discuss-hero h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.2px;}
+  .discuss-hero p{margin:6px 0 0;font-size:13.5px;line-height:1.5;opacity:.9;font-weight:500;}
+
+  .plist{
+    display:flex;flex-wrap:wrap;gap:8px;
+    padding:14px;border:var(--bd);border-radius:16px;
+    background:var(--bg);box-shadow:var(--sh-sm);
+    margin-bottom:22px;
+  }
+  .pchip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 13px;border-radius:12px;
+    background:var(--paper);border:2px solid var(--ink);
+    font-size:13.5px;font-weight:600;
+    box-shadow:2px 2px 0 var(--ink);
+  }
+  .pchip .n{
+    width:18px;height:18px;border-radius:6px;
+    background:var(--ink);color:var(--paper);
+    display:grid;place-items:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;font-weight:700;
+  }
+
+  .result-card{
+    border:var(--bd);border-radius:24px;
+    background:var(--paper);
+    box-shadow:var(--sh);
+    overflow:hidden;
+    margin-bottom:18px;
+    animation:pop .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-card .top{
+    background:var(--ink);color:var(--paper);
+    padding:22px 20px;
+    text-align:center;position:relative;
+  }
+  .result-card .top::after{
+    content:'';position:absolute;left:0;right:0;bottom:-2px;height:5px;
+    background:repeating-linear-gradient(90deg,var(--lime) 0 14px,var(--pink) 14px 28px,var(--yellow) 28px 42px,var(--blue) 42px 56px);
+  }
+  .result-card .top .em{font-size:52px;line-height:1;margin-bottom:4px;}
+  .result-card .top .lab{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    opacity:.65;
+  }
+  .result-card .top .big{
+    font-size:30px;font-weight:700;line-height:1.2;margin-top:6px;
+    letter-spacing:-.4px;
+    min-height:36px;
+    color:var(--paper);
+  }
+  .result-card .bottom{padding:22px 20px;text-align:center;}
+  .result-card .bottom .lab{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
+    color:#888;
+  }
+  .result-card .bottom .word{
+    font-size:26px;font-weight:700;line-height:1.2;margin-top:6px;
+    padding:10px 18px;display:inline-block;
+    background:var(--yellow);
+    border:var(--bd);border-radius:14px;
+    box-shadow:var(--sh-sm);
+    transform:rotate(-1.5deg);
+    word-break:break-word;
+    max-width:100%;
+  }
+  .result-card .bottom .cat{
+    font-size:13px;color:#666;margin-top:12px;font-weight:600;
+  }
+
+  .helper{
+    text-align:center;font-size:11.5px;color:#888;
+    margin-top:14px;line-height:1.6;font-weight:500;
+  }
+
+  .confetti{
+    position:fixed;top:-10px;width:8px;height:14px;
+    z-index:99;pointer-events:none;
+    border:2px solid var(--ink);
+  }
+  @keyframes fall{
+    to{transform:translateY(110vh) rotate(720deg);opacity:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= SPLASH ================= -->
+<div class="splash" id="splash">
+  <div class="splash-card">
+    <div class="splash-logo"><span class="em">🎭</span>LIAR</div>
+    <div class="splash-dots"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="statusbar">
+    <a class="credit-link"
+       href="https://fb.com/aanNEION"
+       target="_blank"
+       rel="noopener noreferrer"
+       id="creditLink"
+       aria-label="Made with love by Neion — opens Facebook">
+      Made with <span class="heart">❤</span> by <strong>Neion</strong>
+    </a>
+    <div class="right">
+      <div class="icons">
+        <svg width="17" height="11" viewBox="0 0 17 11" fill="none" stroke="#0D0D0D" stroke-width="1.6" stroke-linecap="round">
+          <path d="M1 8v2M5 6v4M9 3v7M13 1v9"/>
+        </svg>
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round">
+          <path d="M1 5.5a9 9 0 0 1 13 0M3.5 8a5.5 5.5 0 0 1 8 0"/>
+          <circle cx="7.5" cy="10" r=".8" fill="#0D0D0D"/>
+        </svg>
+        <svg width="24" height="11" viewBox="0 0 24 11" fill="none" stroke="#0D0D0D" stroke-width="1.4">
+          <rect x="1" y="1.5" width="19" height="8" rx="2"/>
+          <rect x="3" y="3.5" width="13" height="4" rx="1" fill="#0D0D0D" stroke="none"/>
+          <path d="M21.5 4v3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <header class="header">
+    <button class="iconbtn hidden" id="backBtn" aria-label="back">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0D0D0D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+    </button>
+    <div class="logo"><span class="em">🎭</span><span>LIAR</span></div>
+    <button class="langbtn" id="langBtn" aria-label="Change language">
+      <span class="globe">🌐</span><span id="langLabel">EN</span>
+    </button>
+  </header>
+
+  <main class="body" id="body">
+
+    <section class="screen active" id="screen-setup">
+      <span class="eyebrow" id="eyebrowNew">নতুন গেম</span>
+      <h1 class="title" id="setupTitle">সবাই শব্দটি জানবে —<br>শুধু একজন ছাড়া 🕵️</h1>
+      <p class="lede" id="setupLede">একটা ক্যাটাগরি বেছে নিন, প্লেয়ার সংখ্যা ঠিক করুন — তারপর গেম শুরু!</p>
+
+      <div class="count-card">
+        <div>
+          <div class="label" id="playersLabel">প্লেয়ার</div>
+          <div class="num"><span id="countVal">5</span><span class="unit" id="playersUnit"> জন</span></div>
+        </div>
+        <div class="stepper">
+          <button class="stepbtn" id="minusBtn">−</button>
+          <button class="stepbtn" id="plusBtn">+</button>
+        </div>
+      </div>
+
+      <h2 class="section" id="chooseCatHeading">ক্যাটাগরি বাছাই</h2>
+      <div class="cat-grid-wrap">
+        <div class="cat-grid" id="catGrid"></div>
+      </div>
+
+      <div class="cta-dock">
+        <button class="btn btn-primary" id="startBtn">
+          <span id="startBtnText">গেম শুরু করুন</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8h10M9 4l4 4-4 4"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-reveal">
+      <div class="reveal-top">
+        <span class="chip dark" id="roundPill">রাউন্ড ১</span>
+        <span class="chip" id="catPill">🌍 দেশ</span>
+      </div>
+
+      <div class="player-badge">
+        <div class="avatar" id="avatar">১</div>
+        <div class="who">
+          <div class="lab" id="whoseTurn">এখন কার হাত?</div>
+          <div class="name" id="turnName">প্লেয়ার ১</div>
+        </div>
+      </div>
+
+      <div class="progress-row" id="progress"></div>
+
+      <div class="hold" id="holdBtn">
+        <div class="hold-idle" id="holdIdle">
+          <div class="big-ico">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+            </svg>
+          </div>
+          <div class="t1" id="holdT1">আঙুল চেপে ধরুন</div>
+          <div class="t2" id="holdT2">স্ক্যান শেষ হলে শব্দ দেখা যাবে</div>
+        </div>
+
+        <div class="hold-peek" id="holdPeek"></div>
+
+        <div class="fp" id="fp">
+          <div class="bg-circle"></div>
+          <svg class="ring" viewBox="0 0 110 110">
+            <circle class="bg" cx="55" cy="55" r="49"/>
+            <circle class="fg" id="fpFg" cx="55" cy="55" r="49"/>
+          </svg>
+          <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+          </svg>
+        </div>
+
+        <div class="pass" id="passOverlay">
+          <div class="check">✓</div>
+          <div class="m" id="passMsg">দেখা হয়েছে!</div>
+          <div class="s" id="passSub">পরের প্লেয়ারের কাছে দিন…</div>
+        </div>
+      </div>
+
+      <p class="helper" id="dontShowNote">🔒 স্ক্রিনটা কারো দেখানো যাবে না — ফোনটা হাতবদল করুন।</p>
+    </section>
+
+    <section class="screen" id="screen-discuss">
+      <div class="reveal-top">
+        <span class="chip dark" id="roundPill2">রাউন্ড ১</span>
+        <span class="chip" id="catPill2">🌍 দেশ</span>
+      </div>
+
+      <div class="discuss-hero">
+        <div class="emo">🗣️</div>
+        <h3 id="discussTitle">আলোচনার সময়!</h3>
+        <p id="discussDesc">সবাই মিলে শব্দটা নিয়ে কথা বলো। কে যেন কিছুতেই মিলাতে পারছে না — লায়ারকে বের করো!</p>
+      </div>
+
+      <h2 class="section" id="playersListHeading">খেলোয়াড়রা</h2>
+      <div class="plist" id="discussPlayers"></div>
+
+      <div class="cta-dock">
+        <button class="btn btn-pink" id="revealBtn" type="button">
+          <span id="revealBtnText">লায়ার কে? 🤔</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-result">
+      <span class="eyebrow pink" id="revealEyebrow">রিভিল</span>
+      <h1 class="title" id="resultTitle" style="margin-bottom:16px;">ধরা পড়ে গেছে! 🕵️</h1>
+
+      <div class="result-card">
+        <div class="top">
+          <div class="em">🕵️</div>
+          <div class="lab" id="liarWasLabel">লায়ার ছিল</div>
+          <div class="big" id="liarName">—</div>
+        </div>
+        <div class="bottom">
+          <div class="lab" id="realWordLabel">আসল শব্দ</div>
+          <div class="word" id="realWord">—</div>
+          <div class="cat" id="realCat">বিষয়: —</div>
+        </div>
+      </div>
+
+      <div class="cta-dock">
+        <button class="btn btn-primary" id="newGameBtn">
+          <span id="playAgainText">আবার খেলি</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8a5 5 0 1 0 1.5-3.5M3 3v3h3"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+     i18n STRINGS
+     ========================================================= */
+  const I18N = {
+    bn: {
+      newGame: 'নতুন গেম',
+      setupTitle: 'সবাই শব্দটি জানবে —<br>শুধু একজন ছাড়া 🕵️',
+      setupLede: 'একটা ক্যাটাগরি বেছে নিন, প্লেয়ার সংখ্যা ঠিক করুন — তারপর গেম শুরু!',
+      players: 'প্লেয়ার',
+      playersUnit: ' জন',
+      chooseCat: 'ক্যাটাগরি বাছাই',
+      startGame: 'গেম শুরু করুন',
+      round: 'রাউন্ড',
+      whoseTurn: 'এখন কার হাত?',
+      player: 'প্লেয়ার',
+      holdT1: 'আঙুল চেপে ধরুন',
+      holdT2: 'স্ক্যান শেষ হলে শব্দ দেখা যাবে',
+      yourWord: 'তোমার শব্দ',
+      category: 'বিষয়',
+      youAreLiar: 'তুমি লায়ার!',
+      liarNote: 'তোমাকে শব্দটা দেওয়া হয়নি। বাকিদের কথা শুনে মিলিয়ে বলো।',
+      seen: 'দেখা হয়েছে!',
+      allSeen: 'সবাই দেখে ফেলেছে!',
+      passSub: 'পরের প্লেয়ারের কাছে দিন…',
+      dontShow: '🔒 স্ক্রিনটা কারো দেখানো যাবে না — ফোনটা হাতবদল করুন।',
+      discussTitle: 'আলোচনার সময়!',
+      discussDesc: 'সবাই মিলে শব্দটা নিয়ে কথা বলো। কে যেন কিছুতেই মিলাতে পারছে না — লায়ারকে বের করো!',
+      playersList: 'খেলোয়াড়রা',
+      whoIsLiar: 'লায়ার কে? 🤔',
+      reveal: 'রিভিল',
+      resultTitle: 'ধরা পড়ে গেছে! 🕵️',
+      liarWas: 'লায়ার ছিল',
+      realWord: 'আসল শব্দ',
+      playAgain: 'আবার খেলি',
+      langSwitchTo: 'EN',
+      langAria: 'Switch to English'
+    },
+    en: {
+      newGame: 'New Game',
+      setupTitle: 'Everyone knows the word —<br>except one 🕵️',
+      setupLede: 'Pick a category, set the player count — then start the game!',
+      players: 'Players',
+      playersUnit: '',
+      chooseCat: 'Choose a Category',
+      startGame: 'Start Game',
+      round: 'Round',
+      whoseTurn: 'Whose turn?',
+      player: 'Player',
+      holdT1: 'Hold your finger',
+      holdT2: 'Word appears when the scan completes',
+      yourWord: 'Your word',
+      category: 'Category',
+      youAreLiar: "You're the Liar!",
+      liarNote: "You didn't get the word. Listen to others and blend in.",
+      seen: 'Seen!',
+      allSeen: 'Everyone has seen!',
+      passSub: 'Pass to the next player…',
+      dontShow: "🔒 Don't let anyone see the screen — pass the phone around.",
+      discussTitle: 'Discussion Time!',
+      discussDesc: "Everyone talks about the word. Someone can't match it — find the liar!",
+      playersList: 'Players',
+      whoIsLiar: 'Who is the Liar? 🤔',
+      reveal: 'Reveal',
+      resultTitle: 'Caught! 🕵️',
+      liarWas: 'The Liar was',
+      realWord: 'The Real Word',
+      playAgain: 'Play Again',
+      langSwitchTo: 'বাং',
+      langAria: 'বাংলায় দেখুন'
+    }
+  };
+
+  /* =========================================================
+     CATEGORIES — both languages (same as before, unchanged)
+     ========================================================= */
+  const CATEGORIES = [
+    { id:'country', icon:'🌍',
+      name:{ bn:'দেশ', en:'Country' },
+      words:{
+        bn:['বাংলাদেশ','ভারত','জাপান','ব্রাজিল','মিশর','ফ্রান্স','কানাডা','অস্ট্রেলিয়া','তুরস্ক','ইতালি','জার্মানি','নেপাল','ভুটান','শ্রীলঙ্কা','চীন','রাশিয়া','স্পেন','কেনিয়া','মেক্সিকো','থাইল্যান্ড','দক্ষিণ কোরিয়া','সৌদি আরব','আর্জেন্টিনা','পর্তুগাল','ভিয়েতনাম','ইন্দোনেশিয়া','মালয়েশিয়া','ফিলিপাইন','নেদারল্যান্ডস','সুইজারল্যান্ড','পাকিস্তান','আফগানিস্তান','মালদ্বীপ','কিউবা','পেরু','নাইজেরিয়া','দক্ষিণ আফ্রিকা','নিউজিল্যান্ড','আয়ারল্যান্ড','পোল্যান্ড','গ্রিস','সুইডেন','নরওয়ে'],
+        en:['Bangladesh','India','Japan','Brazil','Egypt','France','Canada','Australia','Turkey','Italy','Germany','Nepal','Bhutan','Sri Lanka','China','Russia','Spain','Kenya','Mexico','Thailand','South Korea','Saudi Arabia','Argentina','Portugal','Vietnam','Indonesia','Malaysia','Philippines','Netherlands','Switzerland','Pakistan','Afghanistan','Maldives','Cuba','Peru','Nigeria','South Africa','New Zealand','Ireland','Poland','Greece','Sweden','Norway']
+      }
+    },
+    { id:'job', icon:'👨‍⚕️', name:{ bn:'পেশা', en:'Job' },
+      words:{
+        bn:['ডাক্তার','ইঞ্জিনিয়ার','শিক্ষক','পুলিশ','ফায়ারফাইটার','পাইলট','নার্স','কৃষক','জেলে','দর্জি','রাঁধুনি','ড্রাইভার','সাংবাদিক','আইনজীবী','ব্যাংকার','বিজ্ঞানী','অভিনেতা','গায়ক','চিত্রশিল্পী','ফটোগ্রাফার','রাজমিস্ত্রি','কামার','স্বর্ণকার','মালি','নিরাপত্তারক্ষী','পোস্টম্যান','দোকানদার','ব্যবসায়ী','সফটওয়্যার ডেভেলপার','দন্ত চিকিৎসক','স্থপতি','পশুচিকিৎসক','শেফ','ব্যারিস্টার','মডেল','নৃত্যশিল্পী','বাঁশিওয়ালা','মৎস্যজীবী','টেইলর','ঘড়ি মেরামতকারী'],
+        en:['Doctor','Engineer','Teacher','Police Officer','Firefighter','Pilot','Nurse','Farmer','Fisherman','Tailor','Chef','Driver','Journalist','Lawyer','Banker','Scientist','Actor','Singer','Painter','Photographer','Mason','Blacksmith','Goldsmith','Gardener','Security Guard','Postman','Shopkeeper','Businessman','Software Developer','Dentist','Architect','Veterinarian','Chef','Barrister','Model','Dancer','Flutist','Fisherman','Watch Repairer']
+      }
+    },
+    { id:'study', icon:'📚', name:{ bn:'পড়াশোনার বিষয়', en:'Field of Study' },
+      words:{
+        bn:['পদার্থবিজ্ঞান','রসায়ন','গণিত','জীববিজ্ঞান','ইতিহাস','দর্শন','অর্থনীতি','সমাজবিজ্ঞান','মনোবিজ্ঞান','ইংরেজি সাহিত্য','বাংলা সাহিত্য','কম্পিউটার সায়েন্স','সিভিল ইঞ্জিনিয়ারিং','মেডিসিন','ফার্মেসি','আইন','স্থাপত্য','ভূগোল','রাষ্ট্রবিজ্ঞান','নৃতত্ত্ব','পরিসংখ্যান','উদ্ভিদবিজ্ঞান','প্রাণিবিজ্ঞান','সাংবাদিকতা','ব্যবস্থাপনা','হিসাববিজ্ঞান','চারুকলা','সংগীত','নাট্যকলা','পরিবেশ বিজ্ঞান','মার্কেটিং','ফিন্যান্স'],
+        en:['Physics','Chemistry','Mathematics','Biology','History','Philosophy','Economics','Sociology','Psychology','English Literature','Bengali Literature','Computer Science','Civil Engineering','Medicine','Pharmacy','Law','Architecture','Geography','Political Science','Anthropology','Statistics','Botany','Zoology','Journalism','Management','Accounting','Fine Arts','Music','Drama','Environmental Science','Marketing','Finance']
+      }
+    },
+    { id:'food', icon:'🍛', name:{ bn:'খাবার', en:'Food' },
+      words:{
+        bn:['কাচ্চি বিরিয়ানি','ইলিশ মাছ','খিচুড়ি','রসগোল্লা','সন্দেশ','চমচম','ফুচকা','চটপটি','সমুচা','সিঙ্গারা','বার্গার','পিজ্জা','পাস্তা','নুডলস','ফ্রাইড রাইস','কাবাব','তন্দুরি চিকেন','রোস্ট','কোরমা','হালুয়া','পায়েস','ফিরনি','মিষ্টি দই','লাচ্ছি','মোমো','ঝালমুড়ি','আলুর চপ','বেগুনি','পিয়াজু','হালিম','তেহারি','ডাল','ভাত','মাছের ঝোল','শাক','পরোটা','ডিম ভাজি','নিহারি','শর্মা','বিরিয়ানি'],
+        en:['Kacchi Biryani','Hilsa Fish','Khichuri','Rasgulla','Sandesh','Chamcham','Fuchka','Chotpoti','Samosa','Singara','Burger','Pizza','Pasta','Noodles','Fried Rice','Kebab','Tandoori Chicken','Roast','Korma','Halwa','Payesh','Firni','Sweet Yogurt','Lassi','Momo','Jhalmuri','Alur Chop','Beguni','Piyaju','Halim','Tehari','Dal','Rice','Fish Curry','Spinach','Paratha','Egg Fry','Nihari','Sharma','Biryani']
+      }
+    },
+    { id:'animal', icon:'🦁', name:{ bn:'প্রাণী', en:'Animal' },
+      words:{
+        bn:['সিংহ','বাঘ','হাতি','হরিণ','বানর','কুকুর','বিড়াল','গরু','ছাগল','ভেড়া','ঘোড়া','ময়ূর','কাক','পায়রা','মাছরাঙা','কুমির','সাপ','কাছিম','ডলফিন','তিমি','হাঙর','ভল্লুক','উট','জিরাফ','জেব্রা','পেঙ্গুইন','উটপাখি','প্যাঙ্গোলিন','বেজি','কাঠবিড়ালি','খরগোশ','শিয়াল','নেকড়ে','গণ্ডার','জলহস্তী'],
+        en:['Lion','Tiger','Elephant','Deer','Monkey','Dog','Cat','Cow','Goat','Sheep','Horse','Peacock','Crow','Pigeon','Kingfisher','Crocodile','Snake','Tortoise','Dolphin','Whale','Shark','Bear','Camel','Giraffe','Zebra','Penguin','Ostrich','Pangolin','Mongoose','Squirrel','Rabbit','Fox','Wolf','Rhinoceros','Hippopotamus']
+      }
+    },
+    { id:'sport', icon:'🏏', name:{ bn:'খেলাধুলা', en:'Sports' },
+      words:{
+        bn:['ক্রিকেট','ফুটবল','হকি','ব্যাডমিন্টন','টেনিস','কাবাডি','সাঁতার','দৌড়','কুস্তি','বক্সিং','জুডো','তায়কোয়ান্দো','ভারোত্তোলন','সাইক্লিং','গলফ','টেবিল টেনিস','ভলিবল','বাস্কেটবল','স্কোয়াশ','আর্চারি','জিমন্যাস্টিকস','দাবা','ক্যারাম','লুডু','স্কেটিং','সার্ফিং','রাগবি','বিলিয়ার্ড','পোল ভল্ট','ম্যারাথন'],
+        en:['Cricket','Football','Hockey','Badminton','Tennis','Kabaddi','Swimming','Running','Wrestling','Boxing','Judo','Taekwondo','Weightlifting','Cycling','Golf','Table Tennis','Volleyball','Basketball','Squash','Archery','Gymnastics','Chess','Carrom','Ludo','Skating','Surfing','Rugby','Billiards','Pole Vault','Marathon']
+      }
+    },
+    { id:'place', icon:'📍', name:{ bn:'জায়গা', en:'Place' },
+      words:{
+        bn:['কক্সবাজার','সুন্দরবন','সেন্ট মার্টিন','রাঙ্গামাটি','বান্দরবান','সিলেট','ঢাকা','রাজশাহী','খুলনা','বরিশাল','চট্টগ্রাম','কুয়াকাটা','পাহাড়পুর','মহাস্থানগড়','সোনারগাঁও','লালবাগ কেল্লা','আহসান মঞ্জিল','জাতীয় স্মৃতিসৌধ','শাপলা চত্বর','চিড়িয়াখানা','সমুদ্র সৈকত','পাহাড়','নদী','বাজার','স্কুল','মসজিদ','মন্দির','পার্ক','হাসপাতাল','বিমানবন্দর','স্টেডিয়াম','জাদুঘর','গ্রাম','শহর'],
+        en:["Cox's Bazar",'Sundarbans','Saint Martin','Rangamati','Bandarban','Sylhet','Dhaka','Rajshahi','Khulna','Barisal','Chittagong','Kuakata','Paharpur','Mahasthangarh','Sonargaon','Lalbagh Fort','Ahsan Manzil','National Memorial','Shapla Square','Zoo','Beach','Mountain','River','Market','School','Mosque','Temple','Park','Hospital','Airport','Stadium','Museum','Village','City']
+      }
+    },
+    { id:'vehicle', icon:'🚗', name:{ bn:'যানবাহন', en:'Vehicle' },
+      words:{
+        bn:['রিকশা','সিএনজি','বাস','ট্রেন','নৌকা','লঞ্চ','উড়োজাহাজ','মোটরসাইকেল','সাইকেল','ট্রাক','ট্যাক্সি','পদ্মা সেতু','মেট্রোরেল','ঘোড়ার গাড়ি','ভ্যান','ট্রলার','হেলিকপ্টার','রকেট','সাবমেরিন','ট্রাম','স্কুটার','বুলেট ট্রেন','কেবল কার','ফেরি','জাহাজ','বিমান','অ্যাম্বুলেন্স','দমকল গাড়ি'],
+        en:['Rickshaw','CNG','Bus','Train','Boat','Launch','Airplane','Motorcycle','Bicycle','Truck','Taxi','Padma Bridge','Metro Rail','Horse Cart','Van','Trawler','Helicopter','Rocket','Submarine','Tram','Scooter','Bullet Train','Cable Car','Ferry','Ship','Plane','Ambulance','Fire Truck']
+      }
+    },
+    { id:'fruit', icon:'🍎', name:{ bn:'ফল', en:'Fruit' },
+      words:{
+        bn:['আম','কাঁঠাল','লিচু','জাম','তরমুজ','কলা','পেঁপে','আনারস','কমলা','মাল্টা','আঙুর','বেদানা','পেয়ারা','স্ট্রবেরি','ব্লুবেরি','চেরি','নারকেল','খেজুর','ডাব','তাল','বেল','আমড়া','কুল','জামরুল','লটকন','রামবুটান','ড্রাগন ফল','কিউই','আভোকাডো','ম্যাঙ্গোস্টিন'],
+        en:['Mango','Jackfruit','Lychee','Blackberry','Watermelon','Banana','Papaya','Pineapple','Orange','Malta','Grapes','Pomegranate','Guava','Strawberry','Blueberry','Cherry','Coconut','Date','Green Coconut','Palm Fruit','Bael','Hog Plum','Ber','Star Apple','Lotkon','Rambutan','Dragon Fruit','Kiwi','Avocado','Mangosteen']
+      }
+    },
+    { id:'vegetable', icon:'🥕', name:{ bn:'সবজি', en:'Vegetable' },
+      words:{
+        bn:['আলু','পটল','বেগুন','ঢেঁড়স','করলা','লাউ','কুমড়া','চিচিঙ্গা','ঝিঙা','শসা','টমেটো','ফুলকপি','বাঁধাকপি','গাজর','মুলা','পেঁয়াজ','রসুন','আদা','কাঁচা মরিচ','ধনেপাতা','পালং শাক','লাল শাক','পুঁই শাক','কচু','মিষ্টি আলু','বিট','ব্রকলি','লেটুস','সেলারি','সজনে ডাঁটা'],
+        en:['Potato','Pointed Gourd','Eggplant','Okra','Bitter Gourd','Bottle Gourd','Pumpkin','Cucumber','Snake Gourd','Cucumber','Tomato','Cauliflower','Cabbage','Carrot','Radish','Onion','Garlic','Ginger','Green Chili','Coriander','Spinach','Red Spinach','Malabar Spinach','Taro','Sweet Potato','Beet','Broccoli','Lettuce','Celery','Drumstick']
+      }
+    },
+    { id:'flower', icon:'🌸', name:{ bn:'ফুল', en:'Flower' },
+      words:{
+        bn:['গোলাপ','জবা','শাপলা','পদ্ম','বেলি','রজনীগন্ধা','চামেলি','কৃষ্ণচূড়া','শিমুল','রাধাচূড়া','বকুল','কামিনী','মাধবীলতা','অপরাজিতা','নয়নতারা','ডালিয়া','চন্দ্রমল্লিকা','গাঁদা','সূর্য্যমুখী','টিউলিপ','অর্কিড','লিলি','ল্যাভেন্ডার','পপি','ডেইজি','জিনিয়া','পিটুনিয়া'],
+        en:['Rose','Hibiscus','Water Lily','Lotus','Jasmine','Tuberose','Chameli','Krishnachura','Shimul','Radhachura','Bakul','Kamini','Madhabilata','Butterfly Pea','Nayan Tara','Dahlia','Chrysanthemum','Marigold','Sunflower','Tulip','Orchid','Lily','Lavender','Poppy','Daisy','Zinnia','Petunia']
+      }
+    },
+    { id:'color', icon:'🎨', name:{ bn:'রঙ', en:'Color' },
+      words:{
+        bn:['লাল','নীল','সবুজ','হলুদ','কালো','সাদা','কমলা','বেগুনি','গোলাপি','ধূসর','বাদামি','সোনালি','রুপালি','আকাশি','মেরুন','ছাইরঙ','জলপাই','ফিরোজা','ল্যাভেন্ডার','ম্যাজেন্টা','সায়ান','গাঢ় লাল','হালকা নীল','ক্রিম','শ্যামল','তামাটে','সবুজাভ','গেরুয়া'],
+        en:['Red','Blue','Green','Yellow','Black','White','Orange','Purple','Pink','Gray','Brown','Golden','Silver','Sky Blue','Maroon','Ash','Olive','Turquoise','Lavender','Magenta','Cyan','Dark Red','Light Blue','Cream','Dark Green','Copper','Greenish','Ochre']
+      }
+    },
+    { id:'clothing', icon:'👕', name:{ bn:'পোশাক', en:'Clothing' },
+      words:{
+        bn:['শাড়ি','পাঞ্জাবি','কুর্তি','সালোয়ার কামিজ','লেহেঙ্গা','শার্ট','প্যান্ট','জিন্স','টি-শার্ট','টুপি','পাগড়ি','মোজা','জুতা','স্যান্ডেল','চটি','চশমা','ঘড়ি','বেল্ট','টাই','স্কার্ফ','শাল','জ্যাকেট','সোয়েটার','হুডি','শর্টস','লুঙ্গি','গামছা','ওড়না','বুর্কা','হিজাব'],
+        en:['Sari','Panjabi','Kurti','Salwar Kameez','Lehenga','Shirt','Pants','Jeans','T-shirt','Hat','Turban','Socks','Shoes','Sandals','Slippers','Glasses','Watch','Belt','Tie','Scarf','Shawl','Jacket','Sweater','Hoodie','Shorts','Lungi','Gamcha','Scarf','Burqa','Hijab']
+      }
+    },
+    { id:'movie', icon:'🎬', name:{ bn:'সিনেমা', en:'Movie' },
+      words:{
+        bn:['পথের পাঁচালী','তিতাস একটি নদীর নাম','মেঘে ঢাকা তারা','সাত ভাই চম্পা','বেদের মেয়ে জোৎস্না','অগ্নীশ্বর','দেবদাস','বাহুবলী','থ্রি ইডিয়টস','টাইটানিক','অ্যাভেঞ্জার্স','ব্ল্যাক প্যান্থার','ইনসেপশন','শোল','গডফাদার','জুরাসিক পার্ক','হ্যারি পটার','লর্ড অব দ্য রিংস','স্টার ওয়ার্স','ম্যাট্রিক্স','মুঘল-এ-আজম','পদ্মা নদীর মাঝি'],
+        en:['Pather Panchali','Titash Ekti Nadir Naam','Meghe Dhaka Tara','Saat Bhai Champa','Beder Meye Josna','Agnishwar','Devdas','Baahubali','3 Idiots','Titanic','Avengers','Black Panther','Inception','Sholay','The Godfather','Jurassic Park','Harry Potter','Lord of the Rings','Star Wars','The Matrix','Mughal-e-Azam','Padma Nadir Majhi']
+      }
+    },
+    { id:'cartoon', icon:'🐭', name:{ bn:'কার্টুন চরিত্র', en:'Cartoon Character' },
+      words:{
+        bn:['মিকি মাউস','ডোনাল্ড ডাক','টম','জেরি','পিকাচু','ডোরেমন','নোবিতা','সিনচ্যান','বগস বানি','স্পঞ্জবব','প্যাট্রিক','স্কুইডওয়ার্ড','বেন ১০','পাওয়ারপাফ গার্লস','পপাই','টিনটিন','আরিয়েল','এলসা','মোয়ানা','সিম্পসন','বাটারকাপ','ডেক্সটার','জনি ব্রাভো'],
+        en:['Mickey Mouse','Donald Duck','Tom','Jerry','Pikachu','Doraemon','Nobita','Shinchan','Bugs Bunny','SpongeBob','Patrick','Squidward','Ben 10','Powerpuff Girls','Popeye','Tintin','Ariel','Elsa','Moana','Simpson','Buttercup','Dexter','Johnny Bravo']
+      }
+    },
+    { id:'superhero', icon:'🦸', name:{ bn:'সুপারহিরো', en:'Superhero' },
+      words:{
+        bn:['সুপারম্যান','ব্যাটম্যান','স্পাইডারম্যান','আয়রন ম্যান','ক্যাপ্টেন আমেরিকা','থর','হাল্ক','ব্ল্যাক উইডো','ডক্টর স্ট্রেঞ্জ','ব্ল্যাক প্যান্থার','অ্যান্টম্যান','ওয়ান্ডার ওম্যান','অ্যাকুয়াম্যান','ফ্ল্যাশ','গ্রিন ল্যান্টার্ন','শাজাম','ডেডপুল','উলভারিন','স্টর্ম','সাইক্লপস','নাইট ক্রলার','জেসিকা জোন্স'],
+        en:['Superman','Batman','Spiderman','Iron Man','Captain America','Thor','Hulk','Black Widow','Doctor Strange','Black Panther','Antman','Wonder Woman','Aquaman','The Flash','Green Lantern','Shazam','Deadpool','Wolverine','Storm','Cyclops','Nightcrawler','Jessica Jones']
+      }
+    },
+    { id:'bird', icon:'🦜', name:{ bn:'পাখি', en:'Bird' },
+      words:{
+        bn:['ময়না','টিয়া','কাক','পায়রা','চড়ুই','বুলবুল','শালিক','দোয়েল','কোকিল','মাছরাঙা','বক','সারস','হাঁস','মুরগি','ময়ূর','উটপাখি','পেঙ্গুইন','ঈগল','চিল','প্যাঁচা','টুনটুনি','ফিঙ্গে','হুটুম পেঁচা','কাঠময়ূর','পারাবত','বাজপাখি','সোয়ান','ফ্লেমিঙ্গো'],
+        en:['Myna','Parrot','Crow','Pigeon','Sparrow','Bulbul','Starling','Magpie Robin','Cuckoo','Kingfisher','Egret','Crane','Duck','Chicken','Peacock','Ostrich','Penguin','Eagle','Kite','Owl','Tailorbird','Finch','Horned Owl','Woodpecker','Dove','Falcon','Swan','Flamingo']
+      }
+    },
+    { id:'fish', icon:'🐟', name:{ bn:'মাছ', en:'Fish' },
+      words:{
+        bn:['ইলিশ','রুই','কাতলা','মৃগেল','তেলাপিয়া','পাঙাশ','শিং','মাগুর','কৈ','টাকি','চিংড়ি','কাঁকড়া','লবস্টার','স্যামন','টুনা','হাঙর','ডলফিন','তিমি','সুরমা','বোয়াল','আইড়','চিতল','ফলি','রূপচাঁদা','কোরাল','ভেটকি'],
+        en:['Hilsa','Rohu','Catla','Mrigal','Tilapia','Pangasius','Catfish','Magur','Climbing Perch','Taki','Prawn','Crab','Lobster','Salmon','Tuna','Shark','Dolphin','Whale','Surma','Boal','Aire','Chital','Foli','Ribbonfish','Coral','Barramundi']
+      }
+    },
+    { id:'instrument', icon:'🎸', name:{ bn:'বাদ্যযন্ত্র', en:'Musical Instrument' },
+      words:{
+        bn:['ঢোল','তবলা','বাঁশি','হারমোনিয়াম','সেতার','সারেঙ্গি','এসরাজ','দোতারা','একতারা','মাদল','খোল','মৃদঙ্গ','করতাল','মন্দিরা','ভায়োলিন','পিয়ানো','গিটার','ড্রাম','স্যাক্সোফোন','ট্রাম্পেট','বাঁশুরিয়া','চিমটা','ঘুঙুর'],
+        en:['Dhol','Tabla','Flute','Harmonium','Sitar','Sarangi','Esraj','Dotara','Ektara','Madal','Khol','Mridangam','Kartal','Mandira','Violin','Piano','Guitar','Drum','Saxophone','Trumpet','Bansuri','Chimta','Ghungroo']
+      }
+    },
+    { id:'gadget', icon:'📱', name:{ bn:'গ্যাজেট', en:'Gadget' },
+      words:{
+        bn:['স্মার্টফোন','ল্যাপটপ','ট্যাবলেট','স্মার্টওয়াচ','হেডফোন','ইয়ারবাড','স্পিকার','ক্যামেরা','প্রিন্টার','স্ক্যানার','পাওয়ার ব্যাংক','চার্জার','মাউস','কীবোর্ড','মনিটর','রাউটার','পেনড্রাইভ','হার্ডডিস্ক','ড্রোন','ভিআর হেডসেট','স্মার্ট টিভি','গেম কনসোল','মাইক্রোফোন'],
+        en:['Smartphone','Laptop','Tablet','Smartwatch','Headphone','Earbuds','Speaker','Camera','Printer','Scanner','Power Bank','Charger','Mouse','Keyboard','Monitor','Router','Pendrive','Hard Disk','Drone','VR Headset','Smart TV','Game Console','Microphone']
+      }
+    },
+    { id:'social', icon:'📲', name:{ bn:'সোশ্যাল মিডিয়া', en:'Social Media' },
+      words:{
+        bn:['ফেসবুক','ইনস্টাগ্রাম','টুইটার','টিকটক','ইউটিউব','হোয়াটসঅ্যাপ','টেলিগ্রাম','স্ন্যাপচ্যাট','লিংকডইন','পিন্টারেস্ট','রেডিট','ডিসকর্ড','স্কাইপ','ভাইবার','ইমো','ক্লাবহাউস','থ্রেডস','মেসেঞ্জার','উইচ্যাট','লাইন'],
+        en:['Facebook','Instagram','Twitter','TikTok','YouTube','WhatsApp','Telegram','Snapchat','LinkedIn','Pinterest','Reddit','Discord','Skype','Viber','Imo','Clubhouse','Threads','Messenger','WeChat','Line']
+      }
+    },
+    { id:'festival', icon:'🎉', name:{ bn:'উৎসব', en:'Festival' },
+      words:{
+        bn:['ঈদুল ফিতর','ঈদুল আযহা','দুর্গাপূজা','সরস্বতী পূজা','কালী পূজা','বুদ্ধ পূর্ণিমা','বড়দিন','পহেলা বৈশাখ','বিজয় দিবস','স্বাধীনতা দিবস','আন্তর্জাতিক মাতৃভাষা দিবস','নববর্ষ','হোলি','দীপাবলি','নওরোজ','থানকসগিভিং','হ্যালোউইন','ভ্যালেন্টাইনস ডে','মে দিবস','বাংলা নববর্ষ'],
+        en:['Eid-ul-Fitr','Eid-ul-Adha','Durga Puja','Saraswati Puja','Kali Puja','Buddha Purnima','Christmas','Pohela Boishakh','Victory Day','Independence Day','International Mother Language Day','New Year','Holi','Diwali','Nowruz','Thanksgiving','Halloween',"Valentine's Day",'May Day','Bengali New Year']
+      }
+    },
+    { id:'weather', icon:'☁️', name:{ bn:'আবহাওয়া', en:'Weather' },
+      words:{
+        bn:['রোদ','বৃষ্টি','মেঘ','ঝড়','বজ্রপাত','কুয়াশা','তুষার','শিলাবৃষ্টি','গরম','ঠান্ডা','বসন্ত','গ্রীষ্ম','শরৎ','হেমন্ত','শীত','বর্ষা','টর্নেডো','সাইক্লোন','বন্যা','খরা','ঘূর্ণিঝড়','রোদ-বৃষ্টি','আকাশ পরিষ্কার','মেঘলা'],
+        en:['Sunny','Rain','Cloud','Storm','Thunder','Fog','Snow','Hail','Hot','Cold','Spring','Summer','Autumn','Late Autumn','Winter','Monsoon','Tornado','Cyclone','Flood','Drought','Hurricane','Sunshower','Clear Sky','Cloudy']
+      }
+    },
+    { id:'drink', icon:'🥤', name:{ bn:'পানীয়', en:'Drink' },
+      words:{
+        bn:['চা','কফি','লাচ্ছি','বোরহানি','আখের রস','লেবুর শরবত','বেলের শরবত','কোকা-কোলা','পেপসি','স্প্রাইট','ফান্টা','মিরিন্ডা','সেভেন আপ','মাউন্টেন ডিউ','দুধ','ম্যাংগো শেক','ব্যানানা শেক','ওরেঞ্জ জুস','অ্যাপল জুস','গ্রিন টি','ব্ল্যাক টি','কোল্ড কফি','স্মুদি','মকটেল','ককটেল','পানি'],
+        en:['Tea','Coffee','Lassi','Borhani','Sugarcane Juice','Lemonade','Bael Sherbet','Coca-Cola','Pepsi','Sprite','Fanta','Mirinda','7 Up','Mountain Dew','Milk','Mango Shake','Banana Shake','Orange Juice','Apple Juice','Green Tea','Black Tea','Cold Coffee','Smoothie','Mocktail','Cocktail','Water']
+      }
+    },
+    { id:'furniture', icon:'🪑', name:{ bn:'আসবাব', en:'Furniture' },
+      words:{
+        bn:['চেয়ার','টেবিল','খাট','আলমারি','সোফা','ড্রেসিং টেবিল','বুকশেলফ','টিভি কেবিনেট','ডাইনিং টেবিল','বেঞ্চ','ঝুলন্ত দোলনা','ম্যাট্রেস','বালিশ','কম্বল','চাদর','পর্দা','কার্পেট','আয়না','শোরুম','স্ট্যান্ড','তাক','ফ্রিজ'],
+        en:['Chair','Table','Bed','Wardrobe','Sofa','Dressing Table','Bookshelf','TV Cabinet','Dining Table','Bench','Swing','Mattress','Pillow','Blanket','Bed Sheet','Curtain','Carpet','Mirror','Showcase','Stand','Shelf','Fridge']
+      }
+    },
+    { id:'school', icon:'✏️', name:{ bn:'স্কুলের জিনিস', en:'School Item' },
+      words:{
+        bn:['খাতা','কলম','পেন্সিল','রাবার','স্কেল','কম্পাস','প্রোট্রাক্টর','ব্যাগ','বই','বোর্ড','চক','ডাস্টার','জ্যামিতি বক্স','রং পেন্সিল','ওয়াটার কালার','গ্লু','স্ট্যাপলার','পাঞ্চ','ক্লিপ','টিফিন বক্স','জল বোতল','আইডি কার্ড','ডায়েরি','ক্যালকুলেটর','ক্যালেন্ডার'],
+        en:['Notebook','Pen','Pencil','Eraser','Ruler','Compass','Protractor','Bag','Book','Board','Chalk','Duster','Geometry Box','Color Pencil','Watercolor','Glue','Stapler','Punch','Clip','Tiffin Box','Water Bottle','ID Card','Diary','Calculator','Calendar']
+      }
+    },
+    { id:'tree', icon:'🌳', name:{ bn:'গাছ', en:'Tree' },
+      words:{
+        bn:['আমগাছ','বটগাছ','অশ্বত্থ','নারকেল গাছ','তাল গাছ','খেজুর গাছ','পেয়ারা গাছ','লিচু গাছ','কাঁঠাল গাছ','জাম গাছ','শাল গাছ','সেগুন','মেহগনি','ইউক্যালিপটাস','পাইন','দেবদারু','বাঁশ','তেঁতুল','কুল','বেল','আতা','ডালিম','সুপারি','পান','লতা','বনসাই'],
+        en:['Mango Tree','Banyan Tree','Peepal Tree','Coconut Tree','Palm Tree','Date Tree','Guava Tree','Lychee Tree','Jackfruit Tree','Blackberry Tree','Sal Tree','Teak','Mahogany','Eucalyptus','Pine','Cedar','Bamboo','Tamarind','Ber','Bael','Custard Apple','Pomegranate','Betel Nut','Betel Leaf','Vine','Bonsai']
+      }
+    },
+    { id:'language', icon:'🗣️', name:{ bn:'ভাষা', en:'Language' },
+      words:{
+        bn:['বাংলা','ইংরেজি','হিন্দি','উর্দু','আরবি','ফারসি','চীনা','জাপানি','কোরিয়ান','ফরাসি','জার্মান','স্প্যানিশ','ইতালিয়ান','পর্তুগিজ','রুশ','তুর্কি','থাই','ভিয়েতনামিজ','নেপালি','সিংহলি','তামিল','তেলেগু','মালায়ালাম','পাঞ্জাবি','গুজরাটি','মারাঠি'],
+        en:['Bengali','English','Hindi','Urdu','Arabic','Persian','Chinese','Japanese','Korean','French','German','Spanish','Italian','Portuguese','Russian','Turkish','Thai','Vietnamese','Nepali','Sinhalese','Tamil','Telugu','Malayalam','Punjabi','Gujarati','Marathi']
+      }
+    },
+    { id:'brand', icon:'🏷️', name:{ bn:'ব্র্যান্ড', en:'Brand' },
+      words:{
+        bn:['নাইকি','অ্যাডিডাস','পুমা','স্যামসাং','অ্যাপল','শাওমি','হুয়াওয়ে','ওপো','ভিভো','রিয়েলমি','সনি','এলজি','টয়োটা','হোন্ডা','বিএমডব্লিউ','মার্সিডিজ','ফেরারি','ল্যাম্বরগিনি','কোকা-কোলা','পেপসি','নেসলে','ক্যাডবেরি','ম্যাকডোনাল্ডস','স্টারবাক্স','কে.এফ.সি','বার্গার কিং','ইউনিলিভার','রয়্যাল এনফিল্ড'],
+        en:['Nike','Adidas','Puma','Samsung','Apple','Xiaomi','Huawei','Oppo','Vivo','Realme','Sony','LG','Toyota','Honda','BMW','Mercedes','Ferrari','Lamborghini','Coca-Cola','Pepsi','Nestle','Cadbury',"McDonald's",'Starbucks','KFC','Burger King','Unilever','Royal Enfield']
+      }
+    },
+    { id:'videogame', icon:'🎮', name:{ bn:'ভিডিও গেম', en:'Video Game' },
+      words:{
+        bn:['পাবজি','ফ্রি ফায়ার','ক্যান্ডি ক্রাশ','সাবওয়ে সার্ফারস','টেম্পল রান','ক্ল্যাশ অব ক্ল্যানস','মাইনক্রাফট','জিটিএ','ফিফা','পেস','কল অব ডিউটি','ব্যাটলগ্রাউন্ড','আমং আস','লুডু কিং','ফ্ল্যাপি বার্ড','অ্যাংরি বার্ডস','পোকেমন গো','ফোর্টনাইট','অ্যাসাসিনস ক্রিড','রোব্লক্স'],
+        en:['PUBG','Free Fire','Candy Crush','Subway Surfers','Temple Run','Clash of Clans','Minecraft','GTA','FIFA','PES','Call of Duty','Battlegrounds','Among Us','Ludo King','Flappy Bird','Angry Birds','Pokemon Go','Fortnite',"Assassin's Creed",'Roblox']
+      }
+    }
+  ];
+
+  const HOLD_DURATION = 1100;
+  const PASS_DELAY    = 950;
+  const CIRC          = 308;
+  const LS_KEY        = 'liar_lang_v2';
+  const IP_TIMEOUT    = 2200;
+
+  /* =========================================================
+     IP-BASED LANGUAGE DETECTION
+     ========================================================= */
+  async function detectLangFromIP(){
+    const ctrl = new AbortController();
+    const killTimer = setTimeout(() => { try{ ctrl.abort(); }catch(e){} }, IP_TIMEOUT);
+
+    const fetchCountry = (url, pick) =>
+      fetch(url, { signal: ctrl.signal, cache: 'no-store' })
+        .then(r => r.json())
+        .then(d => {
+          const code = pick(d);
+          if (!code) throw new Error('no-country');
+          return String(code).toUpperCase();
+        });
+
+    try {
+      // দুটো API একসাথে — যেটা আগে আসে সেটা জেতে
+      const code = await Promise.any([
+        fetchCountry('https://api.country.is/', d => d && d.country),
+        fetchCountry('https://get.geojs.io/v1/ip/country.json', d => d && d.country)
+      ]);
+      clearTimeout(killTimer);
+      return code === 'BD' ? 'bn' : 'en';
+    } catch (err) {
+      clearTimeout(killTimer);
+      // ফেলব্যাক: ব্রাউজার ভাষা
+      return browserLangFallback();
+    }
+  }
+
+  function browserLangFallback(){
+    const langs = (navigator.languages && navigator.languages.length)
+      ? navigator.languages
+      : [navigator.language || navigator.userLanguage || 'en'];
+    for (let i = 0; i < langs.length; i++){
+      if (String(langs[i] || '').toLowerCase().indexOf('bn') === 0) return 'bn';
+    }
+    return 'en';
+  }
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  const state = {
+    lang: 'bn',  // placeholder — boot() এ সেট হবে
+    count: 5,
+    selectedCatId: 'country',
+    players: [],
+    round: 1,
+    liarIndex: 0,
+    word: '',
+    cat: null,
+    current: 0,
+    peeked: new Set(),
+    peekActive: false,
+    advancing: false
+  };
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  const $  = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const rand = n => Math.floor(Math.random()*n);
+  const pick = a => a[rand(a.length)];
+  const bnDigits = n => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[+d]);
+  const t = k => I18N[state.lang][k] || k;
+  const num = n => state.lang === 'bn' ? bnDigits(n) : String(n);
+
+  function showScreen(id){
+    $$('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    $('#body').scrollTop = 0;
+    $('#backBtn').classList.toggle('hidden', id === 'screen-setup');
+  }
+  function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){} }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  /* =========================================================
+     APPLY LANGUAGE
+     ========================================================= */
+  function applyLang(){
+    document.documentElement.lang = state.lang;
+    document.title = state.lang === 'bn'
+      ? '🎭 LIAR — লায়ার গেম'
+      : '🎭 LIAR — Who is the Liar?';
+
+    $('#eyebrowNew').textContent        = t('newGame');
+    $('#setupTitle').innerHTML          = t('setupTitle');
+    $('#setupLede').textContent         = t('setupLede');
+    $('#playersLabel').textContent      = t('players');
+    $('#playersUnit').textContent       = t('playersUnit');
+    $('#chooseCatHeading').textContent  = t('chooseCat');
+    $('#startBtnText').textContent      = t('startGame');
+
+    $('#whoseTurn').textContent = t('whoseTurn');
+    $('#holdT1').textContent    = t('holdT1');
+    $('#holdT2').textContent    = t('holdT2');
+    $('#passSub').textContent   = t('passSub');
+    $('#dontShowNote').textContent = t('dontShow');
+
+    $('#discussTitle').textContent       = t('discussTitle');
+    $('#discussDesc').textContent        = t('discussDesc');
+    $('#playersListHeading').textContent = t('playersList');
+    $('#revealBtnText').textContent      = t('whoIsLiar');
+
+    $('#revealEyebrow').textContent = t('reveal');
+    $('#resultTitle').textContent   = t('resultTitle');
+    $('#liarWasLabel').textContent  = t('liarWas');
+    $('#realWordLabel').textContent = t('realWord');
+    $('#playAgainText').textContent = t('playAgain');
+
+    $('#langLabel').textContent = t('langSwitchTo');
+    $('#langBtn').setAttribute('aria-label', t('langAria'));
+
+    $('#creditLink').setAttribute('aria-label',
+      state.lang === 'bn'
+        ? 'Neion তৈরি করেছে — ফেসবুক খুলবে'
+        : 'Made with love by Neion — opens Facebook'
+    );
+  }
+
+  /* =========================================================
+     CATEGORY GRID
+     ========================================================= */
+  const catGridEl = $('#catGrid');
+  function renderCatGrid(){
+    catGridEl.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const c = document.createElement('div');
+      c.className = 'cat-card' + (cat.id === state.selectedCatId ? ' on' : '');
+      c.innerHTML = '<span class="ico">' + cat.icon + '</span>' +
+                    '<span class="nm">' + esc(cat.name[state.lang]) + '</span>';
+      c.addEventListener('click', () => {
+        if (state.selectedCatId === cat.id) return;
+        state.selectedCatId = cat.id;
+        renderCatGrid();
+        buzz(8);
+      });
+      catGridEl.appendChild(c);
+    });
+  }
+
+  /* =========================================================
+     PLAYER COUNT
+     ========================================================= */
+  const countVal = $('#countVal');
+  function renderCount(){ countVal.textContent = num(state.count); }
+  $('#minusBtn').addEventListener('click', () => {
+    if (state.count > 3){ state.count--; renderCount(); }
+  });
+  $('#plusBtn').addEventListener('click', () => {
+    if (state.count < 20){ state.count++; renderCount(); }
+  });
+
+  /* =========================================================
+     LANGUAGE TOGGLE
+     ========================================================= */
+  $('#langBtn').addEventListener('click', () => {
+    state.lang = state.lang === 'bn' ? 'en' : 'bn';
+    try { localStorage.setItem(LS_KEY, state.lang); } catch(e){}
+    buzz(12);
+
+    state.round = 1;
+    state.players = [];
+    state.peeked = new Set();
+    applyLang();
+    renderCatGrid();
+    renderCount();
+    showScreen('screen-setup');
+  });
+
+  /* =========================================================
+     START
+     ========================================================= */
+  $('#startBtn').addEventListener('click', () => {
+    state.players = [];
+    for (let i = 1; i <= state.count; i++){
+      state.players.push(t('player') + ' ' + num(i));
+    }
+    state.round = 1;
+    newRound();
+  });
+
+  function newRound(){
+    const cat = CATEGORIES.find(c => c.id === state.selectedCatId) || CATEGORIES[0];
+    state.cat  = cat;
+    state.word = pick(cat.words[state.lang]);
+    state.liarIndex = state.players.length > 0 ? rand(state.players.length) : 0;
+    state.current = 0;
+    state.peeked = new Set();
+    state.advancing = false;
+
+    renderTurn();
+    showScreen('screen-reveal');
+  }
+
+  /* =========================================================
+     REVEAL SCREEN
+     ========================================================= */
+  const holdBtn   = $('#holdBtn');
+  const holdIdle  = $('#holdIdle');
+  const holdPeek  = $('#holdPeek');
+  const progressEl= $('#progress');
+  const passOv    = $('#passOverlay');
+  const passMsg   = $('#passMsg');
+  const fp        = $('#fp');
+  const fpFg      = $('#fpFg');
+
+  let rafId = null;
+  let holdStart = 0;
+  let holdDone = false;
+
+  function renderTurn(){
+    $('#turnName').textContent = state.players[state.current] || '—';
+    $('#avatar').textContent   = num(state.current + 1);
+    $('#roundPill').textContent= t('round') + ' ' + num(state.round);
+    $('#catPill').textContent  = state.cat.icon + ' ' + state.cat.name[state.lang];
+
+    holdPeek.classList.remove('show');
+    holdPeek.innerHTML = '';
+    holdIdle.classList.remove('hide');
+    holdBtn.classList.remove('active','locked','done');
+    passOv.classList.remove('show');
+    fp.classList.remove('show','done');
+    fpFg.style.strokeDashoffset = CIRC;
+
+    state.peekActive = false;
+    state.advancing = false;
+    holdDone = false;
+    if (rafId){ cancelAnimationFrame(rafId); rafId = null; }
+
+    renderProgress();
+  }
+
+  function renderProgress(){
+    progressEl.innerHTML = '';
+    state.players.forEach((_, i) => {
+      const d = document.createElement('span');
+      d.className = 'pdot';
+      if (state.peeked.has(i)) d.classList.add('done');
+      else if (i === state.current) d.classList.add('current');
+      else d.textContent = num(i+1);
+      progressEl.appendChild(d);
+    });
+  }
+
+  function positionFp(x, y){
+    const rect = holdBtn.getBoundingClientRect();
+    const size = 120, half = size/2, pad = 4;
+    let cx = x - rect.left;
+    let cy = y - rect.top;
+    cx = Math.max(half+pad, Math.min(rect.width - half - pad, cx));
+    cy = Math.max(half+pad, Math.min(rect.height- half - pad, cy));
+    fp.style.left = (cx - half) + 'px';
+    fp.style.top  = (cy - half) + 'px';
+  }
+
+  function startHold(x, y){
+    if (state.advancing || state.peekActive) return;
+    if (state.peeked.has(state.current)) return;
+
+    state.peekActive = true;
+    holdDone = false;
+    holdStart = performance.now();
+
+    positionFp(x, y);
+    holdIdle.classList.add('hide');
+    fp.classList.remove('done');
+    fpFg.style.strokeDashoffset = CIRC;
+    void fp.offsetWidth;
+    fp.classList.add('show');
+    holdBtn.classList.add('active');
+    buzz(10);
+
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function tick(now){
+    const p = Math.min((now - holdStart) / HOLD_DURATION, 1);
+    fpFg.style.strokeDashoffset = CIRC * (1 - p);
+
+    if (p >= 1){
+      holdDone = true;
+      fp.classList.add('done');
+      holdBtn.classList.add('done');
+      buzz([15, 30, 15]);
+      revealRole();
+      setTimeout(() => {
+        if (!state.peekActive) return;
+        fp.classList.remove('show');
+      }, 260);
+      rafId = null;
+      return;
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function revealRole(){
+    const isLiar = (state.current === state.liarIndex);
+    if (isLiar){
+      holdPeek.innerHTML =
+        '<div class="k">🕵️</div>' +
+        '<div class="liar">' + esc(t('youAreLiar')) + '</div>' +
+        '<div class="note">' + esc(t('liarNote')) + '</div>';
+    } else {
+      holdPeek.innerHTML =
+        '<div class="k">💡</div>' +
+        '<div class="lab">' + esc(t('yourWord')) + '</div>' +
+        '<div class="word">' + esc(state.word) + '</div>' +
+        '<div class="note">' + esc(t('category')) + ': ' + esc(state.cat.name[state.lang]) + '</div>';
+    }
+    holdPeek.classList.add('show');
+  }
+
+  function endHold(){
+    if (!state.peekActive) return;
+    state.peekActive = false;
+    if (rafId){ cancelAnimationFrame(rafId); rafId = null; }
+
+    fp.classList.remove('show','done');
+    holdPeek.classList.remove('show');
+    holdIdle.classList.remove('hide');
+    holdBtn.classList.remove('active','done');
+
+    if (holdDone){
+      holdDone = false;
+      state.peeked.add(state.current);
+      renderProgress();
+      advanceNext();
+    } else {
+      fpFg.style.strokeDashoffset = CIRC;
+    }
+  }
+
+  function advanceNext(){
+    if (state.advancing) return;
+    state.advancing = true;
+    const isLast = state.current === state.players.length - 1;
+
+    passMsg.textContent = isLast ? t('allSeen') : t('seen');
+    passOv.classList.add('show');
+    holdBtn.classList.add('locked');
+    buzz(20);
+
+    setTimeout(() => {
+      passOv.classList.remove('show');
+      holdBtn.classList.remove('locked');
+      state.advancing = false;
+
+      if (isLast) goDiscuss();
+      else { state.current++; renderTurn(); }
+    }, PASS_DELAY);
+  }
+
+  holdBtn.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    try{ holdBtn.setPointerCapture(e.pointerId); }catch(_){}
+    startHold(e.clientX, e.clientY);
+  });
+  holdBtn.addEventListener('pointerup', e => { e.preventDefault(); endHold(); });
+  holdBtn.addEventListener('pointercancel', () => endHold());
+  holdBtn.addEventListener('lostpointercapture', () => endHold());
+  holdBtn.addEventListener('contextmenu', e => e.preventDefault());
+  holdBtn.addEventListener('dragstart', e => e.preventDefault());
+
+  if (!('onpointerdown' in window)){
+    holdBtn.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const t2 = e.touches[0];
+      startHold(t2.clientX, t2.clientY);
+    }, {passive:false});
+    holdBtn.addEventListener('touchend', e => { e.preventDefault(); endHold(); });
+    holdBtn.addEventListener('touchcancel', () => endHold());
+    holdBtn.addEventListener('mousedown', e => startHold(e.clientX, e.clientY));
+    window.addEventListener('mouseup', () => endHold());
+  }
+
+  /* =========================================================
+     DISCUSSION
+     ========================================================= */
+  function goDiscuss(){
+    $('#roundPill2').textContent = t('round') + ' ' + num(state.round);
+    $('#catPill2').textContent   = state.cat.icon + ' ' + state.cat.name[state.lang];
+
+    const list = $('#discussPlayers');
+    list.innerHTML = '';
+    state.players.forEach((p, i) => {
+      const c = document.createElement('span');
+      c.className = 'pchip';
+      c.innerHTML = '<span class="n">' + num(i+1) + '</span>' + esc(p);
+      list.appendChild(c);
+    });
+    showScreen('screen-discuss');
+  }
+
+  /* =========================================================
+     RESULT
+     ========================================================= */
+  function spawnConfetti(){
+    const colors = ['#C8FF4D','#FF5BA7','#4D6EFF','#FFD93D','#FF8A3D','#B18AFF','#7DFFC4'];
+    for (let i = 0; i < 28; i++){
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.background = colors[rand(colors.length)];
+      el.style.animation = 'fall ' + (1.5 + Math.random()*1.6) + 's ' + (Math.random()*.6) + 's linear forwards';
+      el.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3600);
+    }
+  }
+
+  document.getElementById('revealBtn').addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const players   = state.players || [];
+      const liarIdx   = (typeof state.liarIndex === 'number') ? state.liarIndex : 0;
+      let   liarName  = players[liarIdx];
+      if (!liarName) liarName = t('player') + ' ' + num(liarIdx + 1);
+
+      const wordText  = state.word || '—';
+      const catText   = state.cat
+        ? (t('category') + ': ' + state.cat.icon + ' ' + state.cat.name[state.lang])
+        : (t('category') + ': —');
+
+      const roundPill3El = document.getElementById('roundPill3');
+      const liarNameEl   = document.getElementById('liarName');
+      const realWordEl   = document.getElementById('realWord');
+      const realCatEl    = document.getElementById('realCat');
+
+      if (roundPill3El) roundPill3El.textContent = t('round') + ' ' + num(state.round);
+      if (liarNameEl)   liarNameEl.textContent   = liarName;
+      if (realWordEl)   realWordEl.textContent   = wordText;
+      if (realCatEl)    realCatEl.textContent    = catText;
+
+      buzz([40, 40, 120]);
+      showScreen('screen-result');
+      spawnConfetti();
+    } catch (err) {
+      console.error('Reveal error:', err);
+      try { showScreen('screen-result'); } catch(_){}
+    }
+  });
+
+  $('#newGameBtn').addEventListener('click', () => {
+    state.round = 1;
+    state.players = [];
+    state.peeked = new Set();
+    showScreen('screen-setup');
+  });
+
+  $('#backBtn').addEventListener('click', () => {
+    const cur = $('.screen.active');
+    if (!cur) return;
+    if (cur.id === 'screen-reveal' || cur.id === 'screen-discuss' || cur.id === 'screen-result'){
+      state.round = 1;
+      state.players = [];
+      state.peeked = new Set();
+      showScreen('screen-setup');
+    }
+  });
+
+  /* =========================================================
+     BOOT — IP-based language detection
+     ========================================================= */
+  async function boot(){
+    const splash = document.getElementById('splash');
+
+    // ১. ইউজার আগে ভাষা বেছে নিয়েছে কি না চেক করি
+    let saved = null;
+    try { saved = localStorage.getItem(LS_KEY); } catch(e){}
+
+    if (saved === 'bn' || saved === 'en'){
+      // আগের পছন্দ আছে — কোনো API কল নেই, তাৎক্ষণিক ওপেন
+      state.lang = saved;
+      splash.classList.add('hide');
+      startApp();
+      return;
+    }
+
+    // ২. প্রথমবার — IP দিয়ে ডিটেক্ট করি (স্প্ল্যাশ দেখাতে দেখাতে)
+    const lang = await detectLangFromIP();
+    state.lang = lang;
+
+    // সেভ করে রাখি যাতে পরেরবার সরাসরি ওপেন হয়
+    try { localStorage.setItem(LS_KEY, lang); } catch(e){}
+
+    splash.classList.add('hide');
+    // স্প্ল্যাশের ফেড-আউট শেষ হওয়ার জন্য ছোট বিরতি
+    setTimeout(startApp, 260);
+  }
+
+  function startApp(){
+    applyLang();
+    renderCatGrid();
+    renderCount();
+    showScreen('screen-setup');
+  }
+
+  // ছোট একটা নিরাপত্তা: যদি API ২.৫ সেকেন্ডেও কিছু না দেয়,
+  // স্প্ল্যাশ জোর করে সরাই যাতে ইউজার আটকে না থাকে
+  setTimeout(() => {
+    const splash = document.getElementById('splash');
+    if (splash && !splash.classList.contains('hide')){
+      // এখনো ডিটেক্ট হয়নি — ব্রাউজার ভাষা দিয়ে শুরু করি
+      if (!state._booted){
+        state.lang = browserLangFallback();
+        try { localStorage.setItem(LS_KEY, state.lang); } catch(e){}
+        splash.classList.add('hide');
+        startApp();
+        state._booted = true;
+      }
+    }
+  }, IP_TIMEOUT + 300);
+
+  // মূল বুট কল
+  boot().then(() => { state._booted = true; });
+
+})();
+</script>
+</body>
+</html>

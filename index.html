@@ -75,12 +75,8 @@
     .app{border-radius:34px;height:calc(100dvh - 40px);max-height:860px;}
   }
   :fullscreen .app, :-webkit-full-screen .app{
-    max-width:100%;
-    max-height:100%;
-    height:100dvh;
-    border-radius:0;
-    border:none;
-    box-shadow:none;
+    max-width:100%;max-height:100%;height:100dvh;
+    border-radius:0;border:none;box-shadow:none;
   }
 
   .splash{
@@ -203,11 +199,8 @@
   .icon-btn.muted{background:var(--bg);color:var(--muted);}
   .icon-btn.active{background:var(--lime);}
   .icon-btn.lang-btn{
-    min-width:46px;
-    padding:0 10px;
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:1px;
+    min-width:46px;padding:0 10px;
+    font-size:12px;font-weight:800;letter-spacing:1px;
   }
   .icon-btn svg{display:block;}
   .icon-btn.hidden{display:none;}
@@ -329,7 +322,6 @@
     position:relative;z-index:1;
   }
 
-  /* ============ REVEAL ============ */
   .reveal-body{
     flex:1 1 auto;
     display:flex;flex-direction:column;
@@ -376,7 +368,6 @@
     word-break:break-word;
   }
 
-  /* ============ HOLD BUTTON ============ */
   .hold-wrap{
     display:flex;justify-content:center;
     padding:6px 0 16px;
@@ -458,7 +449,6 @@
     max-width:200px;line-height:1.4;
   }
 
-  /* ============ PEEK — inside circle, shifted up ============ */
   .peek{
     position:absolute;
     inset:14px;
@@ -782,7 +772,6 @@
 
 <main class="app">
 
-  <!-- ================= HOME ================= -->
   <section class="screen active" id="screen-home">
     <header class="header no-border">
       <div class="logo">
@@ -826,7 +815,6 @@
     </div>
   </section>
 
-  <!-- ================= REVEAL ================= -->
   <section class="screen" id="screen-reveal">
     <header class="header no-border">
       <button class="icon-btn" id="backBtn" aria-label="back">
@@ -874,7 +862,6 @@
     </div>
   </section>
 
-  <!-- ================= DISCUSS ================= -->
   <section class="screen" id="screen-discuss">
     <header class="header no-border">
       <button class="icon-btn" id="backBtn2" aria-label="back">
@@ -902,7 +889,6 @@
     </div>
   </section>
 
-  <!-- ================= RESULT ================= -->
   <section class="screen" id="screen-result">
     <header class="header no-border">
       <div></div>
@@ -938,15 +924,11 @@
 (function(){
   'use strict';
 
-  /* =========================================================
-     FULLSCREEN MANAGER
-     ========================================================= */
   const FS = {
     isActive: false,
     backCount: 0,
     resetTimer: null,
     hintEl: null,
-
     isSupported(){
       return !!(document.documentElement.requestFullscreen ||
                 document.documentElement.webkitRequestFullscreen);
@@ -1036,38 +1018,30 @@
     FS.handleBack();
   });
 
-  /* =========================================================
-     SFX
-     ========================================================= */
   const SFX = (() => {
     let ctx = null, master = null, compressor = null, muted = false;
-
     function init(){
       if (ctx) return;
       try {
         const Ctx = window.AudioContext || window.webkitAudioContext;
         if (!Ctx) return;
         ctx = new Ctx();
-
         compressor = ctx.createDynamicsCompressor();
         compressor.threshold.setValueAtTime(-6, ctx.currentTime);
         compressor.knee.setValueAtTime(8, ctx.currentTime);
         compressor.ratio.setValueAtTime(14, ctx.currentTime);
         compressor.attack.setValueAtTime(0.002, ctx.currentTime);
         compressor.release.setValueAtTime(0.15, ctx.currentTime);
-
         master = ctx.createGain();
         master.gain.value = 1.0;
         master.connect(compressor);
         compressor.connect(ctx.destination);
       } catch(e){ ctx = null; }
     }
-
     function unlock(){
       init();
       if (ctx && ctx.state === 'suspended') ctx.resume().catch(()=>{});
     }
-
     function tone(o){
       if (!ctx || muted) return;
       o = o || {};
@@ -1089,7 +1063,6 @@
       osc.start(t0);
       osc.stop(t0 + dur + 0.03);
     }
-
     return {
       isMuted(){ return muted; },
       setMuted(m){ muted = !!m; },
@@ -1139,9 +1112,6 @@
 
   try { if (localStorage.getItem('liar_muted') === '1') SFX.setMuted(true); } catch(e){}
 
-  /* =========================================================
-     i18n
-     ========================================================= */
   const I18N = {
     bn: {
       greeting: 'কতজন মিলে খেলবে?',
@@ -1205,9 +1175,6 @@
     }
   };
 
-  /* =========================================================
-     CATEGORIES
-     ========================================================= */
   const GRADS = [
     ['#06B6D4','#3B82F6'],
     ['#EC4899','#8B5CF6'],
@@ -1228,6 +1195,18 @@
       words:{
         bn:['বাংলাদেশ','ভারত','জাপান','ব্রাজিল','মিশর','ফ্রান্স','কানাডা','অস্ট্রেলিয়া','তুরস্ক','ইতালি','জার্মানি','নেপাল','ভুটান','শ্রীলঙ্কা','চীন','রাশিয়া','স্পেন','কেনিয়া','মেক্সিকো','থাইল্যান্ড','দক্ষিণ কোরিয়া','সৌদি আরব','আর্জেন্টিনা','পর্তুগাল','ভিয়েতনাম','ইন্দোনেশিয়া','মালয়েশিয়া','ফিলিপাইন','নেদারল্যান্ডস','সুইজারল্যান্ড','পাকিস্তান','আফগানিস্তান','মালদ্বীপ','কিউবা','পেরু','নাইজেরিয়া','দক্ষিণ আফ্রিকা','নিউজিল্যান্ড','আয়ারল্যান্ড','পোল্যান্ড','গ্রিস','সুইডেন','নরওয়ে'],
         en:['Bangladesh','India','Japan','Brazil','Egypt','France','Canada','Australia','Turkey','Italy','Germany','Nepal','Bhutan','Sri Lanka','China','Russia','Spain','Kenya','Mexico','Thailand','South Korea','Saudi Arabia','Argentina','Portugal','Vietnam','Indonesia','Malaysia','Philippines','Netherlands','Switzerland','Pakistan','Afghanistan','Maldives','Cuba','Peru','Nigeria','South Africa','New Zealand','Ireland','Poland','Greece','Sweden','Norway']
+      }
+    },
+    { id:'university', icon:'🎓', name:{ bn:'বিশ্ববিদ্যালয়', en:'University' },
+      words:{
+        bn:['ঢাকা বিশ্ববিদ্যালয়','বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয়','চট্টগ্রাম বিশ্ববিদ্যালয়','রাজশাহী বিশ্ববিদ্যালয়','জাহাঙ্গীরনগর বিশ্ববিদ্যালয়','ইসলামী বিশ্ববিদ্যালয়','খুলনা বিশ্ববিদ্যালয়','শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়','বাংলাদেশ কৃষি বিশ্ববিদ্যালয়','বাংলাদেশ ইউনিভার্সিটি অব প্রফেশনালস','নর্থ সাউথ ইউনিভার্সিটি','ব্র্যাক ইউনিভার্সিটি','ইস্ট ওয়েস্ট ইউনিভার্সিটি','আমেরিকান ইন্টারন্যাশনাল ইউনিভার্সিটি','ঢাকা মেডিকেল কলেজ','স্যার সলিমুল্লাহ মেডিকেল কলেজ','ন্যাশনাল ইউনিভার্সিটি','ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি','ইউনাইটেড ইন্টারন্যাশনাল ইউনিভার্সিটি','নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়','রাজশাহী প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয়','খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয়','ঢাকা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয়','বাংলাদেশ টেক্সটাইল বিশ্ববিদ্যালয়','জগন্নাথ বিশ্ববিদ্যালয়','কুমিল্লা বিশ্ববিদ্যালয়','বেগম রোকেয়া বিশ্ববিদ্যালয়','হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়','পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়','বাংলাদেশ উন্মুক্ত বিশ্ববিদ্যালয়'],
+        en:['University of Dhaka','BUET','University of Chittagong','University of Rajshahi','Jahangirnagar University','Islamic University','Khulna University','SUST','Bangladesh Agricultural University','BUP','North South University','BRAC University','East West University','AIUB','Dhaka Medical College','Sir Salimullah Medical College','National University','Daffodil International University','United International University','Noakhali Science and Technology University','RUET','KUET','DUET','BUTEX','Jagannath University','Comilla University','Begum Rokeya University','HSTU','Patuakhali Science and Technology University','Bangladesh Open University']
+      }
+    },
+    { id:'bau', icon:'🌾', name:{ bn:'বাকৃবি', en:'BAU' },
+      words:{
+        bn:['বোটানিক্যাল গার্ডেন','কেন্দ্রীয় লাইব্রেরি','টিএসসি','বঙ্গবন্ধু হল','শেরে বাংলা হল','শহীদ মিনার','খেলার মাঠ','অডিটোরিয়াম','জিমনেসিয়াম','মেডিকেল সেন্টার','কৃষি অনুষদ','পশুচিকিৎসা অনুষদ','ছাত্রী হল','কেন্দ্রীয় ক্যাফেটেরিয়া','ফিশারিজ অনুষদ','কৃষি প্রকৌশল অনুষদ','পুরাতন ব্রহ্মপুত্র নদী','ক্যাম্পাস মসজিদ','ভিসি বাড়ি','মূল ফটক','নার্সারি','ডেইরি ফার্ম','পোল্ট্রি ফার্ম','মাছের পুকুর','কৃষি অর্থনীতি ভবন','পশু হাসপাতাল','ফুড সায়েন্স ভবন','লাইব্রেরি চত্বর'],
+        en:['Botanical Garden','Central Library','TSC','Bangabandhu Hall','Sher-e-Bangla Hall','Shaheed Minar','Playground','Auditorium','Gymnasium','Medical Center','Faculty of Agriculture','Faculty of Veterinary Science','Female Hall','Central Cafeteria','Faculty of Fisheries','Faculty of Agricultural Engineering','Old Brahmaputra River','Campus Mosque','VC Residence','Main Gate','Nursery','Dairy Farm','Poultry Farm','Fish Pond','Agricultural Economics Building','Animal Hospital','Food Science Building','Library Square']
       }
     },
     { id:'job', icon:'👨‍⚕️', name:{ bn:'পেশা', en:'Job' },
